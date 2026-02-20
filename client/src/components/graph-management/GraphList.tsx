@@ -65,7 +65,7 @@ export function GraphList() {
   };
 
   return (
-    <div style={{ height: '100%', overflow: 'auto', padding: '40px' }}>
+    <div style={{ height: '100%', overflow: 'auto', padding: 'clamp(16px, 5vw, 40px)' }}>
       <div style={{ maxWidth: 900, margin: '0 auto' }}>
         <div className="flex items-center justify-between" style={{ marginBottom: 32 }}>
           <div>
@@ -74,7 +74,7 @@ export function GraphList() {
               Explore topics through conversation and build your knowledge map
             </p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2" style={{ flexWrap: 'wrap' }}>
             <button className="btn btn-secondary" onClick={handleImportClick} disabled={importGraph.isPending}>
               {importGraph.isPending ? 'Importing...' : '↑ Import'}
             </button>
@@ -111,7 +111,7 @@ export function GraphList() {
             </div>
           </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 16 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(280px, 100%), 1fr))', gap: 16 }}>
             {graphs.map(graph => (
               <div
                 key={graph.id}

@@ -660,3 +660,30 @@ select.input option {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+/* === Mobile responsive === */
+@media (max-width: 640px) {
+  .topbar-search,
+  .topbar-add-node {
+    display: none;
+  }
+
+  .dialog {
+    width: 95%;
+    max-width: none;
+  }
+
+  .command-palette {
+    width: 95%;
+    margin-top: 10vh;
+  }
+
+  .context-menu {
+    min-width: 240px;
+  }
+
+  .linking-banner {
+    white-space: normal;
+    text-align: center;
+  }
+}

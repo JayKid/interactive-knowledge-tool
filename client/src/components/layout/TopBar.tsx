@@ -212,7 +212,7 @@ export function TopBar({ graph }: Props) {
       )}
 
       {/* Add Node button */}
-      <div ref={addNodeRef} style={{ position: 'relative' }}>
+      <div ref={addNodeRef} className="topbar-add-node" style={{ position: 'relative' }}>
         <button
           className="btn btn-secondary btn-sm"
           onClick={() => setShowAddNode(!showAddNode)}
@@ -294,7 +294,7 @@ export function TopBar({ graph }: Props) {
         )}
       </div>
 
-      <div ref={searchRef} style={{ position: 'relative', width: 280 }}>
+      <div ref={searchRef} className="topbar-search" style={{ position: 'relative', width: 280 }}>
         <input
           className="input"
           type="text"

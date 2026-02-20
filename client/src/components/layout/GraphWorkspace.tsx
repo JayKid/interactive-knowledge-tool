@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { useGraph } from '../../api/hooks.js';
 import { useAppStore } from '../../stores/app-store.js';
+import { useIsMobile } from '../../hooks/useIsMobile.js';
 import { TopBar } from './TopBar.js';
 import { Sidebar } from './Sidebar.js';
 import { GraphCanvas } from '../graph/GraphCanvas.js';
@@ -15,10 +16,11 @@ const DEFAULT_SIDEBAR_WIDTH = 400;
 export function GraphWorkspace() {
   const { graphId } = useParams<{ graphId: string }>();
   const { data: graph, isLoading } = useGraph(graphId || null);
-  const { selectedNodeId, sidebarMode, selectGraph, openChat } = useAppStore();
+  const { selectedNodeId, sidebarMode, selectGraph, openChat, setSidebarMode } = useAppStore();
   const [sidebarWidth, setSidebarWidth] = useState(DEFAULT_SIDEBAR_WIDTH);
   const isDragging = useRef(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     if (graphId) selectGraph(graphId);
@@ -30,6 +32,20 @@ export function GraphWorkspace() {
       openChat(graph.nodes[0].id);
     }
   }, [graph, selectedNodeId, openChat]);
+
+  // Mobile: auto-select first node and open chat if nothing selected
+  useEffect(() => {
+    if (isMobile && graph && graph.nodes.length > 0 && !selectedNodeId) {
+      openChat(graph.nodes[0].id);
+    }
+  }, [isMobile, graph, selectedNodeId, openChat]);
+
+  // Mobile: ensure sidebar is open (no graph to look at)
+  useEffect(() => {
+    if (isMobile && sidebarMode === 'closed') {
+      setSidebarMode('chat');
+    }
+  }, [isMobile, sidebarMode, setSidebarMode]);
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
@@ -80,6 +96,21 @@ export function GraphWorkspace() {
 
   const sidebarOpen = sidebarMode !== 'closed';
 
+  // Mobile layout: full-screen sidebar, no graph canvas
+  if (isMobile) {
+    return (
+      <div className="flex flex-col h-full">
+        <TopBar graph={graph} />
+        <div className="flex flex-1 overflow-hidden">
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+            <Sidebar graph={graph} />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Desktop layout: graph canvas + sidebar
   return (
     <div className="flex flex-col h-full">
       <TopBar graph={graph} />

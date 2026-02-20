@@ -1,4 +1,6 @@
+import { useNavigate } from 'react-router-dom';
 import { useAppStore } from '../../stores/app-store.js';
+import { useIsMobile } from '../../hooks/useIsMobile.js';
 import { ChatPanel } from '../chat/ChatPanel.js';
 import { NodeDetailPanel } from '../node-detail/NodeDetailPanel.js';
 import type { GraphWithDetails } from '@knowledge-tool/shared';
@@ -8,17 +10,28 @@ interface Props {
 }
 
 export function Sidebar({ graph }: Props) {
+  const navigate = useNavigate();
   const { selectedNodeId, sidebarMode, setSidebarMode } = useAppStore();
+  const isMobile = useIsMobile();
 
   const selectedNode = graph.nodes.find(n => n.id === selectedNodeId);
 
   if (!selectedNode) {
     return (
       <div className="flex items-center justify-center h-full text-muted text-sm">
-        Select a node to explore
+        {isMobile ? 'No nodes yet — start a conversation!' : 'Select a node to explore'}
       </div>
     );
   }
+
+  const handleClose = () => {
+    if (isMobile) {
+      // On mobile there's no graph canvas to return to, go back to graph list
+      navigate('/');
+    } else {
+      setSidebarMode('closed');
+    }
+  };
 
   return (
     <div className="flex flex-col h-full" style={{ background: 'var(--bg-secondary)' }}>
@@ -41,13 +54,15 @@ export function Sidebar({ graph }: Props) {
           >
             Details
           </button>
-          <button
-            className="btn btn-ghost btn-sm btn-icon"
-            onClick={() => setSidebarMode('closed')}
-            title="Close sidebar"
-          >
-            x
-          </button>
+          {!isMobile && (
+            <button
+              className="btn btn-ghost btn-sm btn-icon"
+              onClick={handleClose}
+              title="Close sidebar"
+            >
+              x
+            </button>
+          )}
         </div>
       </div>
 
