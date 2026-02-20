@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppStore } from '../../stores/app-store.js';
+import { useIsMobile } from '../../hooks/useIsMobile.js';
 import { useSearch, useCreateFreeNode, useCreateNode, useCreateEdge, useUpdateGraph } from '../../api/hooks.js';
 import type { GraphWithDetails, SearchResult } from '@knowledge-tool/shared';
 
@@ -10,7 +11,8 @@ interface Props {
 
 export function TopBar({ graph }: Props) {
   const navigate = useNavigate();
-  const { openChat } = useAppStore();
+  const { openChat, openCommandPalette } = useAppStore();
+  const isMobile = useIsMobile();
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');
   const [showResults, setShowResults] = useState(false);
@@ -293,6 +295,17 @@ export function TopBar({ graph }: Props) {
           </div>
         )}
       </div>
+
+      {isMobile && (
+        <button
+          className="btn btn-ghost btn-sm btn-icon"
+          onClick={openCommandPalette}
+          title="Search (⌘K)"
+          style={{ fontSize: 16 }}
+        >
+          🔍
+        </button>
+      )}
 
       <div ref={searchRef} className="topbar-search" style={{ position: 'relative', width: 280 }}>
         <input

@@ -22,6 +22,7 @@ interface AppState {
   isExtractionMode: boolean;
   selectedMessageIds: string[];
   showExtractDialog: boolean;
+  isCommandPaletteOpen: boolean;
 
   selectGraph: (graphId: string | null) => void;
   selectNode: (nodeId: string | null) => void;
@@ -41,6 +42,9 @@ interface AppState {
   clearExtractionSelection: () => void;
   openExtractDialog: () => void;
   closeExtractDialog: () => void;
+  openCommandPalette: () => void;
+  closeCommandPalette: () => void;
+  toggleCommandPalette: () => void;
 }
 
 export const useAppStore = create<AppState>((set) => ({
@@ -54,6 +58,7 @@ export const useAppStore = create<AppState>((set) => ({
   isExtractionMode: false,
   selectedMessageIds: [],
   showExtractDialog: false,
+  isCommandPaletteOpen: false,
 
   selectGraph: (graphId) => set({ selectedGraphId: graphId }),
   selectNode: (nodeId) => set({
@@ -123,4 +128,7 @@ export const useAppStore = create<AppState>((set) => ({
   clearExtractionSelection: () => set({ selectedMessageIds: [] }),
   openExtractDialog: () => set({ showExtractDialog: true }),
   closeExtractDialog: () => set({ showExtractDialog: false }),
+  openCommandPalette: () => set({ isCommandPaletteOpen: true }),
+  closeCommandPalette: () => set({ isCommandPaletteOpen: false }),
+  toggleCommandPalette: () => set((state) => ({ isCommandPaletteOpen: !state.isCommandPaletteOpen })),
 }));
