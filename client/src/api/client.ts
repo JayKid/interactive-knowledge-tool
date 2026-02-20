@@ -91,6 +91,11 @@ export const api = {
   summarizeResource: (resourceId: string) =>
     fetchJSON<SummarizeResourceResponse>(`/resources/${resourceId}/summarize`, { method: 'POST' }),
 
+  // Import/Export
+  exportGraph: (graphId: string) => fetchJSON<any>(`/graphs/${graphId}/export`),
+  importGraph: (data: any) =>
+    fetchJSON<{ graph: Graph }>('/graphs/import', { method: 'POST', body: JSON.stringify(data) }),
+
   // Config & Health
   getConfig: () => fetchJSON<ConfigResponse>('/config'),
   getHealth: () => fetchJSON<HealthResponse>('/health'),

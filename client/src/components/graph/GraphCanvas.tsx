@@ -2,7 +2,7 @@ import { useRef, useCallback, useEffect, useMemo, useState } from 'react';
 import ForceGraph2D from 'react-force-graph-2d';
 import { useAppStore } from '../../stores/app-store.js';
 import { useCreateEdge } from '../../api/hooks.js';
-import { depthToColor } from '../../utils/colors.js';
+import { nodeColor } from '../../utils/colors.js';
 import type { GraphWithDetails } from '@knowledge-tool/shared';
 
 interface Props {
@@ -151,7 +151,7 @@ export function GraphCanvas({ graph }: Props) {
     // Node circle
     ctx.beginPath();
     ctx.arc(node.x, node.y, radius, 0, 2 * Math.PI);
-    ctx.fillStyle = isLinkingSource ? '#f59e0b' : depthToColor(node.depth);
+    ctx.fillStyle = isLinkingSource ? '#f59e0b' : nodeColor(node.id);
     ctx.fill();
 
     // Selected ring

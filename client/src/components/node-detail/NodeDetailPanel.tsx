@@ -73,7 +73,6 @@ export function NodeDetailPanel({ node, graph }: Props) {
 
       {/* Stats */}
       <div className="flex gap-4 text-xs text-muted">
-        <span>Depth: {node.depth}</span>
         <span>{messageCount} messages</span>
         <span>{connectedNodes.length} connections</span>
       </div>

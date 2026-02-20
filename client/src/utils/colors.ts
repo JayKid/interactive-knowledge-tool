@@ -1,16 +1,21 @@
-const DEPTH_COLORS = [
-  '#6366f1', // 0 - root (indigo)
-  '#8b5cf6', // 1 - violet
-  '#a78bfa', // 2 - lighter violet
-  '#c084fc', // 3 - purple
-  '#d946ef', // 4 - fuchsia
-  '#f472b6', // 5 - pink
-  '#fb923c', // 6 - orange
-  '#fbbf24', // 7 - amber
-  '#34d399', // 8 - emerald
-  '#22d3ee', // 9+ - cyan
+const NODE_COLORS = [
+  '#6366f1', // indigo
+  '#8b5cf6', // violet
+  '#a78bfa', // lighter violet
+  '#c084fc', // purple
+  '#d946ef', // fuchsia
+  '#f472b6', // pink
+  '#fb923c', // orange
+  '#fbbf24', // amber
+  '#34d399', // emerald
+  '#22d3ee', // cyan
 ];
 
-export function depthToColor(depth: number): string {
-  return DEPTH_COLORS[Math.min(depth, DEPTH_COLORS.length - 1)];
+/** Deterministic color from node ID — stable across renders */
+export function nodeColor(id: string): string {
+  let hash = 0;
+  for (let i = 0; i < id.length; i++) {
+    hash = ((hash << 5) - hash + id.charCodeAt(i)) | 0;
+  }
+  return NODE_COLORS[Math.abs(hash) % NODE_COLORS.length];
 }

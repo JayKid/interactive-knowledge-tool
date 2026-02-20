@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useGraphs, useCreateGraph, useDeleteGraph } from '../../api/hooks.js';
+import { useGraphs, useCreateGraph, useDeleteGraph, useImportGraph } from '../../api/hooks.js';
+import { api } from '../../api/client.js';
 import { NewGraphDialog } from './NewGraphDialog.js';
 
 export function GraphList() {
@@ -8,7 +9,9 @@ export function GraphList() {
   const { data: graphs, isLoading } = useGraphs();
   const createGraph = useCreateGraph();
   const deleteGraph = useDeleteGraph();
+  const importGraph = useImportGraph();
   const [showNewDialog, setShowNewDialog] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleCreate = async (title: string, initialTopic: string) => {
     const result = await createGraph.mutateAsync({ title, initialTopic });
@@ -23,6 +26,44 @@ export function GraphList() {
     }
   };
 
+  const handleExport = async (e: React.MouseEvent, graphId: string, graphTitle: string) => {
+    e.stopPropagation();
+    try {
+      const data = await api.exportGraph(graphId);
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${graphTitle.replace(/[^a-zA-Z0-9-_ ]/g, '').trim() || 'graph'}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Export failed:', err);
+    }
+  };
+
+  const handleImportClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const text = await file.text();
+      const data = JSON.parse(text);
+      const result = await importGraph.mutateAsync(data);
+      navigate(`/graph/${result.graph.id}`);
+    } catch (err: any) {
+      console.error('Import failed:', err);
+      alert(`Import failed: ${err.message}`);
+    }
+
+    // Reset file input so the same file can be selected again
+    e.target.value = '';
+  };
+
   return (
     <div style={{ height: '100%', overflow: 'auto', padding: '40px' }}>
       <div style={{ maxWidth: 900, margin: '0 auto' }}>
@@ -33,9 +74,21 @@ export function GraphList() {
               Explore topics through conversation and build your knowledge map
             </p>
           </div>
-          <button className="btn btn-primary" onClick={() => setShowNewDialog(true)}>
-            + New Graph
-          </button>
+          <div className="flex gap-2">
+            <button className="btn btn-secondary" onClick={handleImportClick} disabled={importGraph.isPending}>
+              {importGraph.isPending ? 'Importing...' : '↑ Import'}
+            </button>
+            <button className="btn btn-primary" onClick={() => setShowNewDialog(true)}>
+              + New Graph
+            </button>
+          </div>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".json"
+            onChange={handleFileSelect}
+            style={{ display: 'none' }}
+          />
         </div>
 
         {isLoading ? (
@@ -46,11 +99,16 @@ export function GraphList() {
               No knowledge graphs yet
             </p>
             <p className="text-muted" style={{ marginBottom: 24 }}>
-              Start by creating your first graph and exploring a topic
+              Start by creating your first graph or importing an existing one
             </p>
-            <button className="btn btn-primary" onClick={() => setShowNewDialog(true)}>
-              Create Your First Graph
-            </button>
+            <div className="flex gap-2 justify-center">
+              <button className="btn btn-secondary" onClick={handleImportClick}>
+                ↑ Import Graph
+              </button>
+              <button className="btn btn-primary" onClick={() => setShowNewDialog(true)}>
+                Create Your First Graph
+              </button>
+            </div>
           </div>
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 16 }}>
@@ -62,13 +120,22 @@ export function GraphList() {
               >
                 <div className="flex items-center justify-between" style={{ marginBottom: 8 }}>
                   <h3 className="font-semibold truncate" style={{ flex: 1 }}>{graph.title}</h3>
-                  <button
-                    className="btn btn-ghost btn-icon btn-sm"
-                    onClick={(e) => handleDelete(e, graph.id)}
-                    title="Delete graph"
-                  >
-                    x
-                  </button>
+                  <div className="flex gap-1">
+                    <button
+                      className="btn btn-ghost btn-icon btn-sm"
+                      onClick={(e) => handleExport(e, graph.id, graph.title)}
+                      title="Export graph"
+                    >
+                      ↓
+                    </button>
+                    <button
+                      className="btn btn-ghost btn-icon btn-sm"
+                      onClick={(e) => handleDelete(e, graph.id)}
+                      title="Delete graph"
+                    >
+                      x
+                    </button>
+                  </div>
                 </div>
                 {graph.description && (
                   <p className="text-secondary text-sm truncate" style={{ marginBottom: 8 }}>

@@ -49,6 +49,16 @@ export function useDeleteGraph() {
   });
 }
 
+export function useImportGraph() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: any) => api.importGraph(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['graphs'] });
+    },
+  });
+}
+
 export function useCreateNode(graphId: string) {
   const queryClient = useQueryClient();
   return useMutation({

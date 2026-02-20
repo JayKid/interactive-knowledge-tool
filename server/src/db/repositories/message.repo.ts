@@ -42,11 +42,17 @@ export const messageRepo = {
     return rows.map(rowToMessage);
   },
 
-  create(id: string, nodeId: string, role: Message['role'], content: string, metadata: MessageMetadata = {}): Message {
+  create(id: string, nodeId: string, role: Message['role'], content: string, metadata: MessageMetadata = {}, createdAt?: string): Message {
     const db = getDb();
-    db.prepare('INSERT INTO messages (id, node_id, role, content, metadata) VALUES (?, ?, ?, ?, ?)').run(
-      id, nodeId, role, content, JSON.stringify(metadata)
-    );
+    if (createdAt) {
+      db.prepare('INSERT INTO messages (id, node_id, role, content, metadata, created_at) VALUES (?, ?, ?, ?, ?, ?)').run(
+        id, nodeId, role, content, JSON.stringify(metadata), createdAt
+      );
+    } else {
+      db.prepare('INSERT INTO messages (id, node_id, role, content, metadata) VALUES (?, ?, ?, ?, ?)').run(
+        id, nodeId, role, content, JSON.stringify(metadata)
+      );
+    }
     const row = db.prepare('SELECT * FROM messages WHERE id = ?').get(id) as MessageRow;
     return rowToMessage(row);
   },
