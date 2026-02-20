@@ -182,12 +182,76 @@ export function GraphCanvas({ graph }: Props) {
   }, [selectedNodeId, linkingSourceNodeId]);
 
   const renderLink = useCallback((link: any, ctx: CanvasRenderingContext2D, globalScale: number) => {
+    const sx = link.source.x;
+    const sy = link.source.y;
+    const tx = link.target.x;
+    const ty = link.target.y;
+
+    // Draw the line
     ctx.beginPath();
-    ctx.moveTo(link.source.x, link.source.y);
-    ctx.lineTo(link.target.x, link.target.y);
+    ctx.moveTo(sx, sy);
+    ctx.lineTo(tx, ty);
     ctx.strokeStyle = '#2d3044';
     ctx.lineWidth = 1 / globalScale;
     ctx.stroke();
+
+    // Arrowhead near target node
+    const dx = tx - sx;
+    const dy = ty - sy;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    if (dist < 1) return; // skip degenerate edges
+
+    const targetRadius = Math.max(5, 4 + (link.target.connections || 0) * 1.5);
+    if (dist < targetRadius * 3) return; // skip very short edges
+
+    const angle = Math.atan2(dy, dx);
+    const arrowSize = 6 / globalScale;
+    // Position arrowhead at the edge of the target node
+    const arrowX = tx - Math.cos(angle) * (targetRadius + 2 / globalScale);
+    const arrowY = ty - Math.sin(angle) * (targetRadius + 2 / globalScale);
+
+    ctx.beginPath();
+    ctx.moveTo(arrowX, arrowY);
+    ctx.lineTo(
+      arrowX - arrowSize * Math.cos(angle - Math.PI / 6),
+      arrowY - arrowSize * Math.sin(angle - Math.PI / 6),
+    );
+    ctx.lineTo(
+      arrowX - arrowSize * Math.cos(angle + Math.PI / 6),
+      arrowY - arrowSize * Math.sin(angle + Math.PI / 6),
+    );
+    ctx.closePath();
+    ctx.fillStyle = '#4a4d63';
+    ctx.fill();
+
+    // Label at midpoint (only when zoomed in and label exists)
+    if (globalScale > 1.5 && link.label) {
+      const midX = (sx + tx) / 2;
+      const midY = (sy + ty) / 2;
+      const labelFontSize = 10 / globalScale;
+      ctx.font = `${labelFontSize}px -apple-system, system-ui, sans-serif`;
+      const textWidth = ctx.measureText(link.label).width;
+      const padding = 3 / globalScale;
+
+      // Background pill
+      ctx.fillStyle = 'rgba(15, 17, 23, 0.8)';
+      ctx.beginPath();
+      const pillRadius = (labelFontSize / 2 + padding);
+      ctx.roundRect(
+        midX - textWidth / 2 - padding,
+        midY - labelFontSize / 2 - padding,
+        textWidth + padding * 2,
+        labelFontSize + padding * 2,
+        pillRadius,
+      );
+      ctx.fill();
+
+      // Label text
+      ctx.fillStyle = '#64748b';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(link.label, midX, midY);
+    }
   }, []);
 
   return (

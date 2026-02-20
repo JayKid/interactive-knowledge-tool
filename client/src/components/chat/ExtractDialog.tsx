@@ -10,7 +10,7 @@ interface Props {
 
 export function ExtractDialog({ selectedCount, suggestedTitle, onClose, onExtract, isExtracting }: Props) {
   const [title, setTitle] = useState(suggestedTitle);
-  const [edgeLabel, setEdgeLabel] = useState('subtopic');
+  const [edgeLabel, setEdgeLabel] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
