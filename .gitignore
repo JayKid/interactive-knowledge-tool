@@ -6,3 +6,5 @@ data/
 *.db-journal
 *.db-wal
 *.tsbuildinfo
+.DS_Store
+.claude/
