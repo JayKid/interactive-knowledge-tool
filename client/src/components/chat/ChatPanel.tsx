@@ -131,7 +131,7 @@ export function ChatPanel({ node, graphId }: Props) {
   const selectedSet = new Set(selectedMessageIds);
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col" style={{ minHeight: '100%' }}>
       {/* Header with extract toggle */}
       {canExtract && (
         <div className="flex items-center justify-between" style={{

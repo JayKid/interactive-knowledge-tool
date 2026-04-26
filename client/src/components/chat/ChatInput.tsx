@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { useIsMobile } from '../../hooks/useIsMobile.js';
 
 interface Props {
   onSend: (message: string) => void;
@@ -8,10 +9,13 @@ interface Props {
 export function ChatInput({ onSend, disabled }: Props) {
   const [value, setValue] = useState('');
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
-    inputRef.current?.focus();
-  }, [disabled]);
+    if (!isMobile) {
+      inputRef.current?.focus();
+    }
+  }, [disabled, isMobile]);
 
   const handleSubmit = () => {
     const trimmed = value.trim();
@@ -28,7 +32,7 @@ export function ChatInput({ onSend, disabled }: Props) {
   };
 
   return (
-    <div className="flex gap-2 p-3" style={{ borderTop: '1px solid var(--border)' }}>
+    <div className="flex gap-2 p-2" style={{ borderTop: '1px solid var(--border)', flexShrink: 0 }}>
       <textarea
         ref={inputRef}
         className="input flex-1"
