@@ -94,6 +94,12 @@ export function GraphCanvas({ graph }: Props) {
     }
   }, [data.nodes.length]);
 
+  const handleZoomToFit = useCallback(() => {
+    if (graphRef.current && data.nodes.length > 0) {
+      graphRef.current.zoomToFit(400, 60);
+    }
+  }, [data.nodes.length]);
+
   const handleNodeClick = useCallback((node: any) => {
     // If we're in linking mode, complete the edge
     if (linkingSourceNodeId) {
@@ -292,6 +298,18 @@ export function GraphCanvas({ graph }: Props) {
         <div className="absolute text-muted text-sm" style={{ bottom: 20, left: 20 }}>
           Click a node to see details. Right-click for more options.
         </div>
+      )}
+
+      {/* Zoom to fit button */}
+      {graph.nodes.length > 1 && (
+        <button
+          className="absolute btn btn-ghost"
+          style={{ top: 12, right: 12, padding: '12px 20px', fontSize: '36px' }}
+          onClick={handleZoomToFit}
+          title="Zoom to fit all nodes"
+        >
+          ⤢
+        </button>
       )}
     </div>
   );
