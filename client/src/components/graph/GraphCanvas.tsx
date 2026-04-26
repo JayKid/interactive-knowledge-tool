@@ -30,7 +30,7 @@ export function GraphCanvas({ graph }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const {
     selectedNodeId, selectNode, showContextMenu, hideContextMenu,
-    linkingSourceNodeId, cancelLinking,
+    linkingSourceNodeId, cancelLinking, openChat,
   } = useAppStore();
   const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
 
@@ -108,12 +108,12 @@ export function GraphCanvas({ graph }: Props) {
       return;
     }
 
-    selectNode(node.id);
+    openChat(node.id);
     if (graphRef.current) {
       graphRef.current.centerAt(node.x, node.y, 600);
       graphRef.current.zoom(3, 600);
     }
-  }, [selectNode, linkingSourceNodeId, cancelLinking, createEdge]);
+  }, [selectNode, linkingSourceNodeId, cancelLinking, createEdge, openChat]);
 
   const handleNodeRightClick = useCallback((node: any, event: MouseEvent) => {
     event.preventDefault();
