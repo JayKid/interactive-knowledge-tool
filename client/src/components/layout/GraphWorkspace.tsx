@@ -101,10 +101,8 @@ export function GraphWorkspace() {
     return (
       <div className="flex flex-col h-full">
         <TopBar graph={graph} />
-        <div className="flex flex-1 overflow-hidden">
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-            <Sidebar graph={graph} />
-          </div>
+        <div className="flex-1 overflow-hidden">
+          <Sidebar graph={graph} />
         </div>
       </div>
     );

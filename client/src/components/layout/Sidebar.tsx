@@ -36,12 +36,13 @@ export function Sidebar({ graph }: Props) {
   return (
     <div className="flex flex-col h-full" style={{ background: 'var(--bg-secondary)' }}>
       {/* Sidebar header */}
-      <div className="flex items-center justify-between p-3" style={{
+      <div className={`flex items-center justify-between p-3 ${isMobile ? 'flex-wrap gap-2' : ''}`} style={{
         borderBottom: '1px solid var(--border)',
         minHeight: 48,
+        flexShrink: 0,
       }}>
-        <h3 className="font-semibold text-sm truncate" style={{ flex: 1 }}>{selectedNode.title}</h3>
-        <div className="flex gap-1">
+        <h3 className="font-semibold text-sm truncate" style={{ flex: 1, minWidth: 0 }}>{selectedNode.title}</h3>
+        <div className="flex gap-1 flex-shrink-0">
           <button
             className={`btn btn-sm ${sidebarMode === 'chat' ? 'btn-primary' : 'btn-ghost'}`}
             onClick={() => setSidebarMode('chat')}
@@ -67,7 +68,7 @@ export function Sidebar({ graph }: Props) {
       </div>
 
       {/* Sidebar content */}
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 overflow-auto" style={{ minHeight: 0 }}>
         {sidebarMode === 'chat' && (
           <ChatPanel node={selectedNode} graphId={graph.id} />
         )}
