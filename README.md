@@ -32,7 +32,7 @@ The graph stays intentional — the LLM suggests, but you decide what gets added
   - OpenAI API — set `LLM_BASE_URL=https://api.openai.com/v1` and your API key
 - An **embedding model** served by the same provider (e.g., `nomic-embed-text` in LM Studio)
 
-## Quick Start
+## Quick Start (Development)
 
 ```bash
 # Clone the repo
@@ -51,6 +51,30 @@ npm run dev
 ```
 
 The app will be available at **http://localhost:5173**. The API server runs on port 3001.
+
+## Deployment with Docker (Recommended for Homelabs)
+
+The easiest way to run this in a homelab or production-like environment is using Docker Compose.
+
+### Prerequisites
+- [Docker](https://docs.docker.com/get-docker/)
+- [Docker Compose](https://docs.docker.com/compose/install/)
+
+### Running the app
+1. Ensure you have a `.env` file in the root directory with your `LLM_BASE_URL` pointing to your LLM provider (e.g., `http://<host-ip>:1234/v1`).
+2. Run the following command:
+
+```bash
+docker-compose up --build
+```
+
+The application will be available at:
+- **Frontend**: [http://localhost:3456](http://localhost:3456)
+- **API Server**: [http://localhost:3001](http://localhost:3001)
+
+### Configuration Notes for Docker
+When running in Docker, ensure that `LLM_BASE_URL` uses a network-reachable IP address (like your host's local LAN IP) rather than `localhost`, as `localhost` inside the container refers to the container itself.
+
 
 ## Configuration
 
